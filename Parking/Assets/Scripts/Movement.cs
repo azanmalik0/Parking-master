@@ -1,202 +1,251 @@
 using DG.Tweening;
-using JetBrains.Annotations;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions.Must;
+using UnityEngine.AI;
 
 public class Movement : MonoBehaviour
 {
-    Vector3 startPos;
-    Vector3 lastPos;
-    float dragDistance;
-    public Camera cam;
-    RaycastHit hitInfo;
-    Ray ray;
-    public bool moveF, moveB = false;
-    [SerializeField]
-    Transform body;
-    //Rigidbody rb;
+    Ray navRay;
+    Ray frontRay;
+    Ray backRay;
+    RaycastHit hitStopInfo;
+    public LayerMask obstacleMask;
+    public LayerMask Mask;
+    public bool frontRaycastActive=true;
+    public bool backRaycastActive=true;
+
+
+    public NavMeshAgent agent;
+    public Transform exitPoint;
+
+
+    public static Movement Instance;
     public float speed;
+    public bool F, B;
+    private GameManager GM;
+    private Transform body;
+    public bool exitFromEnv = false;
+    private Transform previousHitObject;
 
-    public bool f = true;
-
-
-
-
+    private void Awake()
+    {
+        Instance = this;
+    }
     private void Start()
     {
-        //rb= GetComponent<Rigidbody>();
-        dragDistance = Screen.height * 15 / 100;
+        GM = GameManager.Instance;
+        GM = GameManager.Instance;
         body = gameObject.transform.GetChild(0);
-        print(f);
     }
-
-
-
-    void FixedUpdate()
+    private void Update()
     {
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        //---------Forward Navmesh Raycast------------
+
+        navRay = new Ray(transform.position, transform.forward);
+        if (Physics.Raycast(navRay, out hitStopInfo, 3.5f, Mask))
         {
-            startPos = Input.GetTouch(0).position;
-            ray = cam.ScreenPointToRay(startPos);
+            Debug.DrawLine(navRay.origin, hitStopInfo.point, Color.green);
+            StartCoroutine(NavmeshDelay());
         }
-
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
+        else
         {
-            lastPos = Input.GetTouch(0).position;
+            Debug.DrawLine(navRay.origin, navRay.origin + navRay.direction * 5, Color.red);
 
-            if (Physics.Raycast(ray, out hitInfo,100f))
+        }
+        //---------Backward Navmesh Raycast------------
+
+        navRay = new Ray(transform.position, -transform.forward);
+        if (Physics.Raycast(navRay, out hitStopInfo, 3.5f, Mask))
+        {
+            Debug.DrawLine(navRay.origin, hitStopInfo.point, Color.green);
+            StartCoroutine(NavmeshDelay());
+        }
+        else
+        {
+            Debug.DrawLine(navRay.origin, navRay.origin + navRay.direction * 5, Color.red);
+
+        }
+        //--------------Forward Raycast -----------------
+
+
+        frontRay = new Ray(new Vector3(transform.position.x, transform.position.y+0.5f, transform.position.z), transform.forward);
+        if (Physics.Raycast(frontRay, out hitStopInfo, 2.5f, obstacleMask) )
+        {
+            if(this.gameObject.GetComponent<NavMeshAgent>().enabled == false && frontRaycastActive == true)
             {
-                
-                if (hitInfo.collider.gameObject.tag == "Car"&& hitInfo.collider.gameObject==this.gameObject)
-                {
-                    if (Mathf.Abs(lastPos.x - startPos.x) > dragDistance || Mathf.Abs(lastPos.y - startPos.y) > dragDistance)
-                    {
-                        this.gameObject.GetComponent<Rigidbody>().isKinematic = false;
-                        if (Mathf.Abs(lastPos.x - startPos.x) > Mathf.Abs(lastPos.y - startPos.y))
-                        {
-                            
-
-
-                            if (startPos.x < lastPos.x)
-                            {
-                                moveF = true;
-                                //moveB= false;
-
-
-                            }
-                            else if (startPos.x > lastPos.x)
-                            {
-                                moveB = true;
-                                //moveF= false;
-
-
-                            }
-                        }
-                        else
-                        {
-                            if (startPos.y < lastPos.y)
-                            {
-                                moveB = true;
-                                //moveF = false;
-
-
-
-                            }
-                            if (startPos.y > lastPos.y)
-                            {
-                                moveF = true;
-                                //moveB = false;
-                                
-
-
-                            }
-                        }
-                        print("Swipe");
-                        f = true;
-                    }
-                    else
-                    {
-                        print("Tap");
-                    }
-
-                }
+                //print("here");
+            Debug.DrawLine(frontRay.origin, hitStopInfo.point, Color.green);
+            StartCoroutine(ForwardDelay());
+               
             }
 
         }
-
-        if (moveF == true)
+        else
         {
-            
-            //moveB = false;
-            Down();
-            
+            Debug.DrawLine(frontRay.origin, frontRay.origin + frontRay.direction * 5, Color.red);
+
         }
 
-        if (moveB == true)
+
+        //-------------Backward Raycast-------------------
+
+
+        backRay = new Ray(new Vector3(transform.position.x, transform.position.y+0.5f, transform.position.z), -transform.forward);
+        if (Physics.Raycast(backRay, out hitStopInfo, 2.5f, obstacleMask) )
+        {
+            if(this.gameObject.GetComponent<NavMeshAgent>().enabled == false && backRaycastActive == true)
+            {
+                //print("here");
+            Debug.DrawLine(backRay.origin, hitStopInfo.point, Color.green);
+            StartCoroutine(BackwardDelay());
+               
+            }
+
+        }
+        else
+        {
+            Debug.DrawLine(backRay.origin, backRay.origin + backRay.direction * 5, Color.red);
+
+        }
+
+        //---------------------------------
+
+
+
+
+
+        if (F == true)
         {
 
-            //moveF = false;
-            Up();
-            
+            transform.GetComponent<Rigidbody>().velocity = transform.forward * speed * Time.deltaTime;
+
+        }
+        else if (B == true)
+        {
+            transform.GetComponent<Rigidbody>().velocity = transform.forward * -speed * Time.deltaTime;
+
         }
 
     }
-    void Down()
+    public void Back()
     {
-        if (hitInfo.collider.CompareTag("Car") && hitInfo.collider.gameObject == this.gameObject)
-            //hitInfo.collider.transform.Translate(0, 0, 10 * Time.deltaTime);
-            hitInfo.collider.GetComponent<Rigidbody>().velocity = transform.forward * -speed;
-            //hitInfo.collider.GetComponent<Rigidbody>().MovePosition(transform.forward * speed);
+
+        F = false; B = true;
+
     }
-    void Up()
+    public void Forward()
     {
-        if (hitInfo.collider.CompareTag("Car") && hitInfo.collider.gameObject == this.gameObject)
-            //hitInfo.collider.transform.Translate(0, 0, -10 * Time.deltaTime);
-            hitInfo.collider.GetComponent<Rigidbody>().velocity = transform.forward * speed;
-            //hitInfo.collider.GetComponent<Rigidbody>().MovePosition(transform.forward * -speed);
+
+        F = true; B = false;
     }
+
+
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Obstacle") )
+
+        if (exitFromEnv == false)
         {
-                
-            moveB = false;
-            moveF = false;
-
-            //----Animation-----
-
-            collision.gameObject.transform.DORotate(new Vector3(23, collision.gameObject.transform.eulerAngles.y, 0), 0.2f).OnComplete(() =>
+            if (collision.gameObject.CompareTag("Obstacle"))
             {
-                collision.gameObject.transform.DORotate(new Vector3(0, collision.gameObject.transform.eulerAngles.y, 0), 0.0f);
-            });
+                print("Obstacle");
+                //if (previousHitObject == null || collision.transform != previousHitObject)
+                //{
+                //    previousHitObject = collision.transform;
+
+                //    F = false;
+                //    B = false;
+
+                //    //----Animation-----
+
+                //    //collision.gameObject.transform.DORotate(new Vector3(23, collision.gameObject.transform.eulerAngles.y, 0), 0.2f).OnComplete(() =>
+                //    //{
+                //    //    collision.gameObject.transform.DORotate(new Vector3(0, collision.gameObject.transform.eulerAngles.y, 0), 0.0f);
+                //    //});
+                //    Vibration.Vibrate(20);
+                //    speed = 0;
+                    
+                //}
 
 
-            Vibration.Vibrate(20);
-            
 
-        }
-        if (collision.gameObject.CompareTag("Car") && hitInfo.collider.gameObject)
-        {
-
-
-
-            
-
-            if (f == true)
-            {
-                //----Animation---- -
-
-                body.DORotate(new Vector3(2.5f, body.eulerAngles.y, 0), 0.2f).OnComplete(() =>
-                {
-                    body.DORotate(new Vector3(0, body.eulerAngles.y, 0), 0.0f);
-                });
-
-                Vibration.Vibrate(20);
-
-                moveB = false;
-                moveF = false;
-                print("REached");
-               // collision.gameObject.GetComponent<Rigidbody>().isKinematic = true;
-                this.gameObject.GetComponent<Rigidbody>().isKinematic = true;
-               // collision.gameObject.GetComponent<Rigidbody>().isKinematic = false;
-                this.gameObject.GetComponent<Rigidbody>().isKinematic = false;
-                f=false;
             }
-            
+            if (collision.gameObject.CompareTag("Car") && GameManager.Instance.currentPlayer == this.transform && exitFromEnv == false)
+            {
+                print("Car");
 
+                //previousHitObject = null;
+                //if (GM.f == true)
+                //{
+
+
+                //    F = false;
+                //    B = false;
+                //    //----Animation-----
+
+                //    //body.DORotate(new Vector3(2.5f, body.eulerAngles.y, 0), 0.2f).OnComplete(() =>
+                //    //{
+                //    //    body.DORotate(new Vector3(0, body.eulerAngles.y, 0), 0.0f);
+                //    //});
+
+                //    Vibration.Vibrate(20);
+                //    collision.gameObject.GetComponent<Rigidbody>().isKinematic = true;
+                //    GM.f = false;
+                //    speed = 0;
+                //    //agent.SetDestination(collision.gameObject.transform.position);
+                //    //print("culprit");
+                    
+
+                //}
+            }
         }
+
+
     }
 
-   
-    //IEnumerator moveDelay()
-    //{
+    private void OnTriggerEnter(Collider other)
+    {
 
-    //    yield return new WaitForSeconds(0.5f);
-    //    this.gameObject.GetComponent<Rigidbody>().isKinematic = false;
 
-    //}
+        if (other.gameObject.CompareTag("ExitEnv"))
+        {
+            print("Exitfrom env");
+            this.gameObject.GetComponent<NavMeshAgent>().enabled = true;
+            GetComponent<Rigidbody>().isKinematic = true;
+            agent.SetDestination(exitPoint.position);
+            exitFromEnv = true;
+
+        }
+        if (other.gameObject.CompareTag("Exit"))
+        {
+            gameObject.SetActive(false);
+        }
+        
+
+    }
+    IEnumerator NavmeshDelay()
+    {
+        speed = 0;
+        yield return new WaitForSeconds(0.5f);
+        speed = 800;
+        
+
+    }
+    IEnumerator ForwardDelay()
+    {
+        speed = 0;
+        yield return new WaitForSeconds(0.5f);
+        frontRaycastActive = false;
+        
+
+    }
+    IEnumerator BackwardDelay()
+    {
+        speed = 0;
+        yield return new WaitForSeconds(0.5f);
+        backRaycastActive = false;
+        
+
+    }
 
 }

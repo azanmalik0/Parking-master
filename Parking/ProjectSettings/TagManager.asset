@@ -8,15 +8,18 @@ TagManager:
   - Car
   - WayPoint
   - Exit
+  - Runway
+  - ExitEnv
+  - Raycast
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
-  - 
-  - 
+  - SpeedBreaker
+  - obstacle
   - 
   - 
   - 

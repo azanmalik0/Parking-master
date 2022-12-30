@@ -1,9 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    private Ray ray2;
+    private RaycastHit hitStopInfo;
+    public GameObject ray2point;
+
+
+    public Image Rpanel;
+    public Transform currentPlayer;
     public static GameManager Instance;
     Vector3 startPos;
     Vector3 lastPos;
@@ -11,55 +20,62 @@ public class GameManager : MonoBehaviour
     public Camera cam;
     public RaycastHit hitInfo;
     float dragDistance;
-    public float speed=15;
     public bool moveF, moveB = false;
-    public bool f;
-    public static GameObject current=null;
-    public CollisionController CC;
-    public GameObject[] wayPoints;
+    public bool f, swipeActive;
+
     private void Awake()
     {
-        Instance= this;
+        Instance = this;
     }
     void Start()
     {
         cam = FindObjectOfType<Camera>();
-        CC = CollisionController.instance;
-        dragDistance = Screen.height * 15 / 100;
-        
+        dragDistance = Screen.height * 15 / 500;
+
     }
 
-    
+
     void FixedUpdate()
     {
+
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
             startPos = Input.GetTouch(0).position;
+            ray = cam.ScreenPointToRay(startPos);
+        }
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved)
+        {
+            lastPos = Input.GetTouch(0).position;
             ray = cam.ScreenPointToRay(startPos);
         }
 
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
         {
             lastPos = Input.GetTouch(0).position;
-            
+
             if (Physics.Raycast(ray, out hitInfo, 100f))
             {
-                //speed = 0;
+
+
 
                 if (hitInfo.collider.gameObject.tag == "Car")
                 {
                     if (Mathf.Abs(lastPos.x - startPos.x) > dragDistance || Mathf.Abs(lastPos.y - startPos.y) > dragDistance)
                     {
-                        //speed = 15;
+
+                        hitInfo.collider.gameObject.GetComponent<Movement>().speed = 800;
                         hitInfo.collider.gameObject.GetComponent<Rigidbody>().isKinematic = false;
-                       
+                        currentPlayer = hitInfo.collider.transform;
+
                         if (Mathf.Abs(lastPos.x - startPos.x) > Mathf.Abs(lastPos.y - startPos.y))
                         {
+
+
                             // X-AXIS Movement
 
-                            if (hitInfo.collider.transform.eulerAngles.y==90)
+                            if (hitInfo.collider.transform.eulerAngles.y == 90)
                             {
-                                print("here 1");
+                                //print("here");
                                 if (startPos.x < lastPos.x)
                                 {
                                     moveF = true;
@@ -73,53 +89,36 @@ public class GameManager : MonoBehaviour
 
                                 }
                             }
-                            else 
+                            else
                             {
-                                print("here 2");
-                                print(hitInfo.collider.transform.rotation.y);
                                 if (startPos.x > lastPos.x)
                                 {
+                                    hitInfo.collider.gameObject.GetComponent<Movement>().frontRaycastActive = true;
                                     moveF = true;
                                     moveB = false;
                                 }
                                 else if (startPos.x < lastPos.x)
                                 {
+                                    hitInfo.collider.gameObject.GetComponent<Movement>().backRaycastActive = true;
 
                                     moveB = true;
                                     moveF = false;
 
                                 }
                             }
-                            
+
                         }
-                        else if(Mathf.Abs(lastPos.x - startPos.x) < Mathf.Abs(lastPos.y - startPos.y))
+                        else if (Mathf.Abs(lastPos.x - startPos.x) < Mathf.Abs(lastPos.y - startPos.y))
                         {
                             // Y-AXIS Movement
-                            if(hitInfo.collider.transform.rotation.y == 180f)
-                            {
-                            if (startPos.y > lastPos.y)
-                            {
-                                
-                                
-
-                                moveB = true;
-                                moveF = false;
-                            }
-                            if (startPos.y < lastPos.y)
+                            if (hitInfo.collider.transform.eulerAngles.y == 180f)
                             {
 
-
-                                moveF = true;
-                                moveB = false;
-
-                            }
-
-                            }
-                            else
-                            {
                                 if (startPos.y < lastPos.y)
                                 {
 
+                                    //print("here");
+                                    hitInfo.collider.gameObject.GetComponent<Movement>().backRaycastActive = true;
 
 
                                     moveB = true;
@@ -128,6 +127,30 @@ public class GameManager : MonoBehaviour
                                 if (startPos.y > lastPos.y)
                                 {
 
+                                    //print("here");
+                                    hitInfo.collider.gameObject.GetComponent<Movement>().frontRaycastActive = true;
+
+                                    moveF = true;
+                                    moveB = false;
+
+                                }
+
+                            }
+
+                            else
+                            {
+                                //print("here");
+                                if (startPos.y > lastPos.y)
+                                {
+
+
+
+                                    moveB = true;
+                                    moveF = false;
+                                }
+                                if (startPos.y < lastPos.y)
+                                {
+
 
                                     moveF = true;
                                     moveB = false;
@@ -135,55 +158,44 @@ public class GameManager : MonoBehaviour
                                 }
                             }
                         }
-                        
-                        if (current == null)
-                        {
-                        current=hitInfo.collider.gameObject;
-                            print("GM");
 
-                        }
                         print("Swipe");
-                        f= true;
+                        f = true;
                     }
                     else
                     {
-                        print("Tap");
+
                     }
 
                 }
             }
 
+
+
         }
         if (moveF == true)
         {
-
-            Forward();
-            moveB = false;
+            if (hitInfo.collider.CompareTag("Car"))
+                hitInfo.collider.gameObject.GetComponent<Movement>().Forward();
 
         }
 
-       else if (moveB == true)
+        else if (moveB == true)
         {
+            if (hitInfo.collider.CompareTag("Car"))
+                hitInfo.collider.gameObject.GetComponent<Movement>().Back();
 
-            Back();
-            moveF = false;
 
         }
 
     }
-    void Back()
+    public void inLevelButtons(string str)
     {
-        if (hitInfo.collider.CompareTag("Car") /*&& hitInfo.collider.gameObject == this.gameObject*/)
-            //hitInfo.collider.GetComponent<Rigidbody>().velocity = transform.forward * -speed;
-            hitInfo.collider.transform.Translate(-transform.forward*speed * Time.deltaTime);
-
+        if (str == "Retry")
+        {
+            SceneManager.LoadScene("Backup", LoadSceneMode.Single);
+        }
     }
-    void Forward()
-    {
-        if (hitInfo.collider.CompareTag("Car") /*&& hitInfo.collider.gameObject == this.gameObject*/)
-            //hitInfo.collider.GetComponent<Rigidbody>().velocity = transform.forward * speed;
-            hitInfo.collider.transform.Translate(transform.forward*speed * Time.deltaTime);
 
-    }
 }
-    
+
