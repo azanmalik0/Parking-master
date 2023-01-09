@@ -148,7 +148,7 @@ public class Movement : MonoBehaviour
         {
             if (collision.gameObject.CompareTag("Obstacle"))
             {
-                print("Obstacle");
+                //print("Obstacle");
                 //if (previousHitObject == null || collision.transform != previousHitObject)
                 //{
                 //    previousHitObject = collision.transform;
@@ -172,7 +172,7 @@ public class Movement : MonoBehaviour
             }
             if (collision.gameObject.CompareTag("Car") && GameManager.Instance.currentPlayer == this.transform && exitFromEnv == false)
             {
-                print("Car");
+                //print("Car");
 
                 //previousHitObject = null;
                 //if (GM.f == true)
@@ -209,7 +209,7 @@ public class Movement : MonoBehaviour
 
         if (other.gameObject.CompareTag("ExitEnv"))
         {
-            print("Exitfrom env");
+            //print("Exitfrom env");
             this.gameObject.GetComponent<NavMeshAgent>().enabled = true;
             GetComponent<Rigidbody>().isKinematic = true;
             agent.SetDestination(exitPoint.position);
