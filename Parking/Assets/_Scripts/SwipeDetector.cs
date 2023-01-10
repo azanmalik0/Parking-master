@@ -13,6 +13,11 @@ public class SwipeDetector : MonoBehaviour
     public Camera cam;
     public Collider targetVeh;
 
+    private void Awake()
+    {
+        Instance= this;
+        cam = FindObjectOfType<Camera>();
+    }
 
     private void Update()
     {
@@ -31,12 +36,7 @@ public class SwipeDetector : MonoBehaviour
 
         }
     }
-    private void Awake()
-    {
-        Instance= this;
-        cam = FindObjectOfType<Camera>();
-    }
-    
+    // subscribe
     void OnEnable()
     {
 
@@ -69,12 +69,12 @@ public class SwipeDetector : MonoBehaviour
     private void On_Swipe(Gesture gesture)
     {
         print("Swipe");
-        targetVeh.GetComponent<Collider>().gameObject.GetComponent<Movement>().speed = 800;
+        targetVeh.GetComponent<Collider>().gameObject.GetComponent<Movement>().speed = 1200;
         targetVeh.GetComponent<Collider>().gameObject.GetComponent<Rigidbody>().isKinematic = false;
 
         
 
-        //}
+        
         if (targetVeh.GetComponent<Collider>().transform.eulerAngles.y == 180)
         {
 
@@ -292,14 +292,12 @@ public class SwipeDetector : MonoBehaviour
                 if (hit.collider.gameObject.CompareTag("Car"))
                 {
                     targetVeh = hit.collider;
-                    Debug.Log("Here");
-
                 }
             }
         }
     }
 
-    public void inLevelButtons(string str)
+    public void InLevelButtons(string str)
     {
         if (str == "Retry")
         {

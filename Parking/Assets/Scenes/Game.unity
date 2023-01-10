@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -227,7 +227,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 275922564}
-  - component: {fileID: 275922565}
   m_Layer: 0
   m_Name: Level 2
   m_TagString: Untagged
@@ -254,22 +253,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &275922565
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 275922563}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2bac0f82b92a6b542888fec0777aa468, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveF: 0
-  moveB: 0
-  cam: {fileID: 0}
-  targetVeh: {fileID: 0}
 --- !u!1 &294590956
 GameObject:
   m_ObjectHideFlags: 0
@@ -2807,6 +2790,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 996130282}
+  - component: {fileID: 996130281}
   m_Layer: 0
   m_Name: SwipeDetector
   m_TagString: Untagged
@@ -2814,6 +2798,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &996130281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 996130280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bac0f82b92a6b542888fec0777aa468, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveF: 0
+  moveB: 0
+  cam: {fileID: 0}
+  targetVeh: {fileID: 0}
 --- !u!4 &996130282
 Transform:
   m_ObjectHideFlags: 0
@@ -4561,7 +4561,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   autoUpdatePickedObject: 0
-  allowUIDetection: 1
+  allowUIDetection: 0
   enableUIMode: 1
   autoUpdatePickedUI: 0
   enabledNGuiMode: 0
@@ -6578,9 +6578,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: inLevelButtons
+      - m_Target: {fileID: 996130281}
+        m_TargetAssemblyTypeName: SwipeDetector, Assembly-CSharp
+        m_MethodName: InLevelButtons
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7847,11 +7847,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4667528831744748430, guid: d3d5bd57cff329343902bf76316e2cff, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -7.88
       objectReference: {fileID: 0}
     - target: {fileID: 4667528831744748430, guid: d3d5bd57cff329343902bf76316e2cff, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 32.7
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 4667528831744748430, guid: d3d5bd57cff329343902bf76316e2cff, type: 3}
       propertyPath: m_LocalPosition.z
