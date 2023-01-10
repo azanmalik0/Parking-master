@@ -22,10 +22,7 @@ public class Movement : MonoBehaviour
     public static Movement Instance;
     public float speed;
     public bool F, B;
-    private GameManager GM;
-    private Transform body;
     public bool exitFromEnv = false;
-    private Transform previousHitObject;
 
     private void Awake()
     {
@@ -33,9 +30,6 @@ public class Movement : MonoBehaviour
     }
     private void Start()
     {
-        GM = GameManager.Instance;
-        GM = GameManager.Instance;
-        body = gameObject.transform.GetChild(0);
     }
     private void Update()
     {
@@ -137,70 +131,6 @@ public class Movement : MonoBehaviour
     {
 
         F = true; B = false;
-    }
-
-
-
-    private void OnCollisionEnter(Collision collision)
-    {
-
-        if (exitFromEnv == false)
-        {
-            if (collision.gameObject.CompareTag("Obstacle"))
-            {
-                //print("Obstacle");
-                //if (previousHitObject == null || collision.transform != previousHitObject)
-                //{
-                //    previousHitObject = collision.transform;
-
-                //    F = false;
-                //    B = false;
-
-                //    //----Animation-----
-
-                //    //collision.gameObject.transform.DORotate(new Vector3(23, collision.gameObject.transform.eulerAngles.y, 0), 0.2f).OnComplete(() =>
-                //    //{
-                //    //    collision.gameObject.transform.DORotate(new Vector3(0, collision.gameObject.transform.eulerAngles.y, 0), 0.0f);
-                //    //});
-                //    Vibration.Vibrate(20);
-                //    speed = 0;
-                    
-                //}
-
-
-
-            }
-            if (collision.gameObject.CompareTag("Car") && exitFromEnv == false)
-            {
-                //print("Car");
-
-                //previousHitObject = null;
-                //if (GM.f == true)
-                //{
-
-
-                //    F = false;
-                //    B = false;
-                //    //----Animation-----
-
-                //    //body.DORotate(new Vector3(2.5f, body.eulerAngles.y, 0), 0.2f).OnComplete(() =>
-                //    //{
-                //    //    body.DORotate(new Vector3(0, body.eulerAngles.y, 0), 0.0f);
-                //    //});
-
-                //    Vibration.Vibrate(20);
-                //    collision.gameObject.GetComponent<Rigidbody>().isKinematic = true;
-                //    GM.f = false;
-                //    speed = 0;
-                //    //agent.SetDestination(collision.gameObject.transform.position);
-                //    //print("culprit");
-                    
-
-                //}
-            }
-        }
-
-
     }
 
     private void OnTriggerEnter(Collider other)
