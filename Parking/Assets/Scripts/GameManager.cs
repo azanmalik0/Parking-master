@@ -8,13 +8,7 @@ public class GameManager : MonoBehaviour
 {
     Collider targetVeh;
     public LayerMask rayMask;
-    private Ray ray2;
-    public GameObject ray2point;
-    public float threshold=0.97f;
-    public float radius;
-
     public Image Rpanel;
-    public Transform currentPlayer;
     public static GameManager Instance;
     Vector3 startPos;
     Vector3 lastPos;
@@ -24,6 +18,9 @@ public class GameManager : MonoBehaviour
     float dragDistance;
     public bool moveF, moveB = false;
     public bool f, swipeActive;
+    public float targetVehicleMovement;
+    public bool targetVehicleIsKinematic;
+    public float radius;
 
     private void Awake()
     {
@@ -44,8 +41,9 @@ public class GameManager : MonoBehaviour
         {
             startPos = Input.GetTouch(0).position;
             ray = cam.ScreenPointToRay(startPos);
-            if (Physics.Raycast(ray, out hitinfo, 500, rayMask))
+            if (Physics.SphereCast(ray, radius ,out hitinfo, 500, rayMask))
             {
+                print("Registered");
                 targetVeh = hitinfo.collider;
             }
         }
@@ -57,12 +55,11 @@ public class GameManager : MonoBehaviour
            
                     if (Mathf.Abs(lastPos.x - startPos.x) > dragDistance || Mathf.Abs(lastPos.y - startPos.y) > dragDistance)
                     {
+                targetVeh.GetComponent<Collider>().gameObject.GetComponent<Movement>().speed=800;
+                targetVeh.GetComponent<Collider>().gameObject.GetComponent<Rigidbody>().isKinematic=false;
 
-                        targetVeh.GetComponent<Collider>().gameObject.GetComponent<Movement>().speed = 800;
-                        targetVeh.GetComponent<Collider>().gameObject.GetComponent<Rigidbody>().isKinematic = false;
-                        currentPlayer = targetVeh.GetComponent<Collider>().transform;
 
-                        if (Mathf.Abs(lastPos.x - startPos.x) > Mathf.Abs(lastPos.y - startPos.y))
+                if (Mathf.Abs(lastPos.x - startPos.x) > Mathf.Abs(lastPos.y - startPos.y))
                         {
 
 

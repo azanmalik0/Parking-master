@@ -170,7 +170,7 @@ public class Movement : MonoBehaviour
 
 
             }
-            if (collision.gameObject.CompareTag("Car") && GameManager.Instance.currentPlayer == this.transform && exitFromEnv == false)
+            if (collision.gameObject.CompareTag("Car") && exitFromEnv == false)
             {
                 //print("Car");
 
