@@ -72,7 +72,8 @@ public class EasyTouchWelcomeScreen : EditorWindow {
 		EditorApplication.OpenProject(Application.dataPath.Remove(Application.dataPath.Length - "Assets".Length, "Assets".Length));
 	}
 
-	static EasyTouchWelcomeScreen(){
+    [Obsolete]
+    static EasyTouchWelcomeScreen(){
 		EditorApplication.playmodeStateChanged -= OnPlayModeChanged;
 		EditorApplication.playmodeStateChanged += OnPlayModeChanged;
 		
@@ -89,7 +90,8 @@ public class EasyTouchWelcomeScreen : EditorWindow {
 		EditorApplication.update -= OpenAtStartup;
 	}
 
-	static void OnPlayModeChanged(){
+    [Obsolete]
+    static void OnPlayModeChanged(){
 		EditorApplication.update -= OpenAtStartup;
 		EditorApplication.playmodeStateChanged -= OnPlayModeChanged;
 	}

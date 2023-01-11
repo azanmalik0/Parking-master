@@ -164,9 +164,7 @@ public class SwipeDetector : MonoBehaviour
                 moveF = false;
                 moveB = true;
                 Debug.Log("Left");
-
-
-
+ 
             }
         }
         else
@@ -214,9 +212,6 @@ public class SwipeDetector : MonoBehaviour
 
                 Debug.Log("Down");
 
-
-
-
             }
             else if (gesture.swipe == EasyTouch.SwipeDirection.DownLeft)
             {
@@ -227,9 +222,6 @@ public class SwipeDetector : MonoBehaviour
 
                 Debug.Log("DownLeft");
 
-
-
-
             }
             else if (gesture.swipe == EasyTouch.SwipeDirection.DownRight)
             {
@@ -239,9 +231,6 @@ public class SwipeDetector : MonoBehaviour
                 moveB = false;
 
                 Debug.Log("DownRight");
-
-
-
 
             }
 
@@ -264,18 +253,8 @@ public class SwipeDetector : MonoBehaviour
 
                 Debug.Log("Right");
 
-
-
-
             }
         }
-        
-
-
-
-        
-
-
 
     }
 
@@ -294,14 +273,6 @@ public class SwipeDetector : MonoBehaviour
                     targetVeh = hit.collider;
                 }
             }
-        }
-    }
-
-    public void InLevelButtons(string str)
-    {
-        if (str == "Retry")
-        {
-            SceneManager.LoadScene("Game", LoadSceneMode.Single);
         }
     }
 }
